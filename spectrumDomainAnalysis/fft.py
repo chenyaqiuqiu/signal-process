@@ -17,20 +17,38 @@ def FFT(Fs, data):
     result = result[range(int(N / 2))]  # 因为图形对称，所以取一半
     return axisFreq, result
 
+def cepstrum(signal):
+    # 计算信号的傅里叶变换
+    spectrum = np.fft.fft(signal)
+    # 计算对数幅度谱
+    log_spectrum = np.log(np.abs(spectrum) + 1e-10)  # 避免对数零值
+    # 计算逆傅里叶变换
+    cepstrum_result = np.fft.ifft(log_spectrum)
+    return cepstrum_result.real  # 只取实部
+
+def complex_cepstrum(signal):
+    # 计算信号的傅里叶变换
+    spectrum = np.fft.fft(signal)
+    # 计算复倒谱
+    complex_cepstrum_result = np.fft.ifft(np.log(spectrum + 1e-10))  # 避免对数零值
+    return complex_cepstrum_result
+
+
+
 if __name__ == '__main__':
     Fs = 10000  # 采样频率
     f1 = 390  # 信号频率1
     f2 = 2000  # 信号频率2
     t = np.linspace(0, 1, Fs)  # 生成 1s 的时间序列
     # 给定信号
-    y = 2 * np.sin(2 * np.pi * f1 * t) + 5 * np.sin(2 * np.pi * f2 * t)
+    signal = 2 * np.sin(2 * np.pi * f1 * t) + 5 * np.sin(2 * np.pi * f2 * t)
     # 第一步，对没有添加噪声的信号进行FFT，验证分析是否正确
-    x, result = FFT(Fs, y)
+    x, result = FFT(Fs, signal)
  
     # 绘图
     fig1 = plt.figure(figsize=(16, 9))
     plt.title('original data')
-    plt.plot(t, y)
+    plt.plot(t, signal)
     plt.xlabel('time/s')
     plt.ylabel('Amplitude')
     plt.grid()
@@ -41,4 +59,15 @@ if __name__ == '__main__':
     plt.xlabel('Frequency/Hz')
     plt.ylabel('Amplitude')
     plt.grid()
+  
+
+    cepstrum_result = cepstrum(signal)
+    fig3 = plt.figure(figsize=(16, 9))
+    plt.plot(cepstrum_result)
+    plt.title('Cepstrum')
+    plt.xlabel('Quefrency')
+    plt.ylabel('Amplitude')
+    plt.grid()
+    
     plt.show()
+
