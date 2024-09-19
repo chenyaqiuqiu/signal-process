@@ -1,15 +1,6 @@
 import numpy as np
 import pandas as pd
 
-
-N = 1024                        # 采样点数
-sample_freq=120                 # 采样频率 120 Hz, 大于两倍的最高频率
-sample_interval=1/sample_freq   # 采样间隔
-signal_len=N*sample_interval    # 信号长度
-t=np.arange(0,signal_len,sample_interval)
-
-signals = 5 + 2 * np.sin(2 * np.pi * 20 * t) + 3 * np.sin(2 * np.pi * 30 * t) + 4 * np.sin(2 * np.pi * 40 * t)  # 采集的信号
-
 # 均值
 def means(signal):
     return signal.mean(axis=0)  # 1.均值
@@ -91,7 +82,7 @@ def kurt_factor(signal):
     kurt_factor = data.kurt() / signal.std()
     return kurt_factor
 
-
+'''
 print("means: ", means(signals))
 print("var: ", var(signals))
 print("max: ", max(signals))
@@ -105,3 +96,5 @@ print("peak_factor: ", peak_factor(signals))
 print("form_factor: ", form_factor(signals))
 print("impulse_factor: ", impulse_factor(signals))
 print("crest_factor: ", crest_factor(signals))
+'''
+
