@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.stats import kurtosis
 
 # 均值
 def means(signal):
@@ -42,59 +43,79 @@ def rms(signal):
 
 # 峰值因子
 def peak_factor(signal):
-    peak_value = signal.abs().max()
-    peak_factor = peak_value / rms
-    return peak_factor
-
+    # 计算峰值
+    peak_value = np.max(np.abs(signal))
+    # 计算均方根值
+    rms_value = np.sqrt(np.mean(signal**2))
+    # 计算峰值因子
+    if rms_value != 0:
+        return peak_value / rms_value
+    else:
+        return np.inf  # 避免除以零
+    
 # 波形因子
-def form_factor(signal):
-    # 计算均方根（RMS）
-    rms = np.sqrt(np.mean(signal**2))
-    # 计算平均绝对值
-    mean_absolute_value = np.mean(signal.abs())
+def waveform_factor(signal):
+    # 计算均值
+    mean_value = np.mean(np.abs(signal))
+    # 计算均方根值
+    rms_value = np.sqrt(np.mean(signal**2))
     # 计算波形因子
-    form_factor = rms / mean_absolute_value
-    return form_factor
-
+    if rms_value != 0:
+        return mean_value / rms_value
+    else:
+        return np.inf  # 避免除以零
+    
 # 脉冲因子
 def impulse_factor(signal):
-    # 计算均方根（RMS）
-    rms = np.sqrt(np.mean(signal**2))
-    # 计算最大绝对值
-    max_absolute_value = signal.abs().max()
+    # 计算峰值
+    peak_value = np.max(np.abs(signal))
+    # 计算平均值
+    mean_value = np.mean(np.abs(signal))
     # 计算脉冲因子
-    impulse_factor = max_absolute_value / rms
-    return impulse_factor
-
+    if mean_value != 0:
+        return peak_value / mean_value
+    else:
+        return np.inf  # 避免除以零
+    
 # 裕度因子
 def crest_factor(signal):
-    # 计算均方根（RMS）
-    rms = np.sqrt(np.mean(signal**2))
-    # 计算最大绝对值
-    max_absolute_value = signal.abs().max()
+    # 计算均方根值
+    rms_value = np.sqrt(np.mean(signal**2))
+    # 计算峰值
+    peak_value = np.max(np.abs(signal))
     # 计算裕度因子
-    crest_factor = max_absolute_value / rms
-    return crest_factor
-
+    if peak_value != 0:
+        return rms_value / peak_value
+    else:
+        return 0  # 避免除以零
+    
 # 峭度因子
-def kurt_factor(signal):
-    data = pd.Series(signal)
-    kurt_factor = data.kurt() / signal.std()
-    return kurt_factor
+def kurtosis_factor(signal):
+    # 计算峭度
+    return kurtosis(signal, fisher=True)  # fisher=True 返回标准化的峭度，减去3
 
-'''
-print("means: ", means(signals))
-print("var: ", var(signals))
-print("max: ", max(signals))
-print("min: ", min(signals))
-print("std: ", std(signals))
-print("skew: ", skew(signals))
-print("kurt: ", kurt(signals))
-print("p2p: ", peak2peak(signals))
-print("rms: ", rms(signals))
-print("peak_factor: ", peak_factor(signals))
-print("form_factor: ", form_factor(signals))
-print("impulse_factor: ", impulse_factor(signals))
-print("crest_factor: ", crest_factor(signals))
-'''
+
+if __name__ == '__main__':
+    Fs = 10000  # 采样频率
+    f1 = 390  # 信号频率1
+    f2 = 2000  # 信号频率2
+    t = np.linspace(0, 1, Fs)  # 生成 1s 的时间序列
+    # 给定信号
+    signals = 2 * np.sin(2 * np.pi * f1 * t) + 5 * np.sin(2 * np.pi * f2 * t)
+
+    print("means: ", means(signals))
+    print("var: ", var(signals))
+    print("max: ", max(signals))
+    print("min: ", min(signals))
+    print("std: ", std(signals))
+    print("skew: ", skew(signals))
+    print("kurt: ", kurt(signals))
+    print("p2p: ", peak2peak(signals))
+    print("rms: ", rms(signals))
+    print("peak_factor: ", peak_factor(signals))
+    print("form_factor: ", waveform_factor(signals))
+    print("impulse_factor: ", impulse_factor(signals))
+    print("crest_factor: ", crest_factor(signals))
+    print("kurtosis_factor: ", kurtosis_factor(signals))
+
 
