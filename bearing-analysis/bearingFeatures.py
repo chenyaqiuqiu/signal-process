@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def bearing_fault_freqs(n, d, D, alpha, fr=None):
     '''
     基本描述：
