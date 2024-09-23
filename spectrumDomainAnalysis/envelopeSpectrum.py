@@ -36,6 +36,20 @@ def plt_amp_prob_density_fun(input, n):
     plt.bar(x=range( len(count_num) ), height=count_num)  # 绘制柱状图
     plt.show()
 
+
+def log_spectrum(signal):
+    """计算信号的对数谱"""
+    spectrum = np.fft.fft(signal)
+    log_spectrum = np.log(np.abs(spectrum) + 1e-10)  # 添加小值以避免对数为负无穷
+    return log_spectrum
+
+def complex_cepstrum(signal):
+    """计算对数谱的复倒谱"""
+    spectrum = np.fft.fft(signal)
+    log_spectrum = np.log(np.abs(spectrum) + 1e-10)  # 添加小值以避免对数为负无穷
+    cepstrum = np.fft.ifft(log_spectrum)
+    return cepstrum
+
 # 包络谱函数
 def envelope_spectrum(data, fs):
     '''
